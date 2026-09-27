@@ -1,0 +1,28 @@
+# Second line of defence for the database keep-alive. Vercel Cron already
+# calls /api/cron/keepalive once a day (see vercel.json). This workflow does the
+# same from GitHub, so the cluster still gets traffic if the cron is ever
+# paused or the project is moved.
+#
+# Setup, in the GitHub repository settings:
+#   Variables > SITE_URL     the deployed address, for example https://your-app.vercel.app
+#   Secrets   > CRON_SECRET  the same value as CRON_SECRET on Vercel (only if you set one)
+name: Database keep-alive
+
+on:
+  schedule:
+    - cron: '30 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    if: ${{ vars.SITE_URL != '' }}
+    steps:
+      - name: Call the keep-alive endpoint
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail --silent --show-error --retry 3 --retry-delay 20 --max-time 60 \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${SITE_URL%/}/api/cron/keepalive"
