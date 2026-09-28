@@ -1,13 +1,14 @@
 import { BsCalendar4, BsPerson } from 'react-icons/bs'
 import { useParams } from 'react-router-dom'
 import { PostCard } from '../components/blog/PostCard.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { Breadcrumb } from '../components/ui/Breadcrumb.tsx'
 import { ButtonLink } from '../components/ui/Button.tsx'
 import { EmptyState, ErrorState, PageLoader } from '../components/ui/States.tsx'
 import { useQuery } from '../hooks/useQuery.ts'
 import { api } from '../lib/api.ts'
 import { formatDate, img, imgSet } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
+import { articleData, breadcrumbData } from '../lib/structuredData.ts'
 import type { Post } from '../types.ts'
 
 interface PostResponse {
@@ -23,7 +24,22 @@ export default function BlogPost() {
 
   return (
     <>
-      <title>{pageTitle(post ? post.title : 'Blog')}</title>
+      <Seo
+        title={post ? post.title : 'Blog'}
+        description={post?.excerpt}
+        image={post ? img(post.image, 1200, 630) : undefined}
+        type={post ? 'article' : 'website'}
+        noindex={Boolean(error) && !post}
+        jsonLd={
+          post && [
+            articleData(post),
+            breadcrumbData([
+              { name: 'Blog', path: '/blog' },
+              { name: post.title, path: `/blog/${post.slug}` },
+            ]),
+          ]
+        }
+      />
 
       <section className="bg-gray-1">
         <div className="container-x py-6">
@@ -74,7 +90,7 @@ export default function BlogPost() {
               <img
                 src={img(post.image, 1100, 560)}
                 srcSet={imgSet(post.image, 1100, 560)}
-                alt=""
+                alt={post.title}
                 fetchPriority="high"
                 className="mt-10 h-[260px] w-full rounded-[5px] object-cover sm:h-[480px]"
               />

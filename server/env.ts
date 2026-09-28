@@ -49,6 +49,11 @@ export function jwtSecret(): string {
   return createHash('sha256').update(`kainvara-jwt:${mongoUri()}`).digest('hex')
 }
 
+// The public address of the store, used in the sitemap and share previews.
+export function siteUrl(): string {
+  return (process.env.SITE_URL?.trim() || 'https://kainvara.vercel.app').replace(/\/+$/, '')
+}
+
 export function cronSecret(): string | null {
   return process.env.CRON_SECRET?.trim() || null
 }
@@ -59,6 +64,23 @@ export function adminSeed(): { email: string; password: string } | null {
   return email && password ? { email, password } : null
 }
 
+// A Stripe key names its own mode: sk_test_ (or rk_test_) and sk_live_.
+export function stripeMode(): 'test' | 'live' | null {
+  const key = process.env.STRIPE_SECRET_KEY?.trim()
+  if (!key) return null
+  return /^(sk|rk)_live_/.test(key) ? 'live' : 'test'
+}
+
+// Kainvara is a demonstration store with nothing to ship, so a live key is
+// ignored unless STRIPE_ALLOW_LIVE=true says that taking real money is meant.
 export function stripeSecretKey(): string | null {
-  return process.env.STRIPE_SECRET_KEY?.trim() || null
+  const key = process.env.STRIPE_SECRET_KEY?.trim()
+  if (!key) return null
+  if (stripeMode() === 'live' && process.env.STRIPE_ALLOW_LIVE?.trim() !== 'true') return null
+  return key
+}
+
+// The signing secret of the webhook endpoint (whsec_), from the Stripe dashboard.
+export function stripeWebhookSecret(): string | null {
+  return process.env.STRIPE_WEBHOOK_SECRET?.trim() || null
 }

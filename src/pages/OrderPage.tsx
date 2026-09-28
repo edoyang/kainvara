@@ -1,26 +1,83 @@
-import { useState } from 'react'
-import { BsCheckCircleFill } from 'react-icons/bs'
-import { useLocation, useParams } from 'react-router-dom'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { BsCheckCircleFill, BsCreditCard2Back, BsHourglassSplit, BsInfoCircleFill } from 'react-icons/bs'
+import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { OrderDetails, StatusBadge } from '../components/account/OrderBits.tsx'
+import { TestModeNote } from '../components/cart/PaymentNote.tsx'
 import { Button, ButtonLink } from '../components/ui/Button.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { ErrorState, PageLoader } from '../components/ui/States.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { useToast } from '../context/toast.ts'
+import { goToPayment, usePaymentConfig } from '../hooks/useCheckout.ts'
 import { clearQueryCache, useQuery } from '../hooks/useQuery.ts'
 import { api, errorMessage } from '../lib/api.ts'
-import { formatDate } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
+import { cx, formatDate } from '../lib/format.ts'
 import type { Order } from '../types.ts'
+
+const TONES = {
+  success: 'border-success bg-success/10',
+  info: 'border-primary bg-primary-faded/30',
+  alert: 'border-alert bg-alert/10',
+}
+
+function Notice({
+  tone,
+  icon,
+  title,
+  children,
+}: {
+  tone: keyof typeof TONES
+  icon: ReactNode
+  title: string
+  children: ReactNode
+}) {
+  return (
+    <div className={cx('flex items-start gap-4 rounded-[5px] border p-[25px]', TONES[tone])} role="status">
+      <span className="mt-0.5 shrink-0">{icon}</span>
+      <div>
+        <h2 className="text-h3">{title}</h2>
+        <div className="mt-1 text-p">{children}</div>
+      </div>
+    </div>
+  )
+}
 
 export default function OrderPage() {
   const { number = '' } = useParams()
   const location = useLocation()
+  const [params] = useSearchParams()
   const { notify } = useToast()
   const justPlaced = Boolean((location.state as { placed?: boolean } | null)?.placed)
+  // Set by the address Stripe sends the shopper back to.
+  const returned = params.get('payment')
   const path = `/orders/${encodeURIComponent(number)}`
   const { data: order, error, reload } = useQuery(path, (signal) => api<Order>(path, { signal }))
+  const payments = usePaymentConfig()
   const [cancelling, setCancelling] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const [paying, setPaying] = useState(false)
+  const [checking, setChecking] = useState(returned === 'success')
+
+  // The webhook records the payment as well, asking here means the page is
+  // right the moment the shopper lands on it.
+  const checkPayment = useCallback(async () => {
+    await api<Order>('/payments/confirm', { method: 'POST', body: { orderNumber: number } })
+    clearQueryCache('/orders')
+    reload()
+  }, [number, reload])
+
+  useEffect(() => {
+    if (returned !== 'success') return
+    let active = true
+    checkPayment()
+      .catch(() => null)
+      .then(() => {
+        if (active) setChecking(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [returned, checkPayment])
 
   async function cancel() {
     setCancelling(true)
@@ -31,15 +88,42 @@ export default function OrderPage() {
       reload()
     } catch (err) {
       notify(errorMessage(err), 'error')
+      reload()
     } finally {
       setCancelling(false)
       setConfirming(false)
     }
   }
 
+  async function pay() {
+    setPaying(true)
+    try {
+      if (await goToPayment(number)) return
+      clearQueryCache('/orders')
+      reload()
+    } catch (err) {
+      notify(errorMessage(err), 'error')
+    }
+    setPaying(false)
+  }
+
+  async function checkAgain() {
+    setChecking(true)
+    try {
+      await checkPayment()
+    } catch (err) {
+      notify(errorMessage(err), 'error')
+    }
+    setChecking(false)
+  }
+
+  const paid = order?.payment.status === 'paid'
+  const awaitingPayment = order?.status === 'pending' && !paid
+  const canPay = awaitingPayment && payments.data?.enabled === true
+
   return (
     <>
-      <title>{pageTitle(`Order ${number}`)}</title>
+      <Seo title={`Order ${number}`} noindex />
       <PageHeader
         title="Order details"
         crumbs={[{ label: 'My account', to: '/account' }, { label: 'Orders', to: '/account/orders' }, { label: number }]}
@@ -53,16 +137,49 @@ export default function OrderPage() {
             <PageLoader />
           ) : (
             <>
+              {returned === 'success' && paid && (
+                <Notice
+                  tone="success"
+                  icon={<BsCheckCircleFill size={28} className="text-success" aria-hidden />}
+                  title="Thank you, your payment was received"
+                >
+                  Order {order.number} is paid. You can follow its progress from this page at any time.
+                </Notice>
+              )}
+
+              {returned === 'success' && awaitingPayment && (
+                <Notice
+                  tone="info"
+                  icon={<BsHourglassSplit size={28} className="text-primary" aria-hidden />}
+                  title={checking ? 'Checking your payment' : 'Your payment is still being confirmed'}
+                >
+                  <p>This usually takes a few seconds. You do not need to pay again.</p>
+                  {!checking && (
+                    <Button size="sm" variant="outline-primary" className="mt-3" onClick={checkAgain}>
+                      Check again
+                    </Button>
+                  )}
+                </Notice>
+              )}
+
+              {returned === 'cancelled' && awaitingPayment && (
+                <Notice
+                  tone="alert"
+                  icon={<BsInfoCircleFill size={28} className="text-alert" aria-hidden />}
+                  title="The payment was not completed"
+                >
+                  Nothing was charged. Your items are still reserved, you can pay whenever you are ready.
+                </Notice>
+              )}
+
               {justPlaced && order.status !== 'cancelled' && (
-                <div className="flex items-start gap-4 rounded-[5px] border border-success bg-success/10 p-[25px]">
-                  <BsCheckCircleFill size={28} className="mt-0.5 shrink-0 text-success" aria-hidden />
-                  <div>
-                    <h2 className="text-h3">Thank you, your order is confirmed</h2>
-                    <p className="mt-1 text-p">
-                      We have reserved your items. Keep the order number {order.number} for your records.
-                    </p>
-                  </div>
-                </div>
+                <Notice
+                  tone="success"
+                  icon={<BsCheckCircleFill size={28} className="text-success" aria-hidden />}
+                  title="Thank you, your order is confirmed"
+                >
+                  We have reserved your items. Keep the order number {order.number} for your records.
+                </Notice>
               )}
 
               <div className="flex flex-wrap items-center justify-between gap-4">
@@ -72,6 +189,24 @@ export default function OrderPage() {
                 </div>
                 <StatusBadge status={order.status} />
               </div>
+
+              {canPay && (
+                <div className="flex flex-col gap-4 rounded-[5px] border border-gray-2 p-[25px]">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <h2 className="text-h5">Pay for this order</h2>
+                      <p className="mt-1 text-p">
+                        Your items are reserved. Pay by card on a secure page run by Stripe.
+                      </p>
+                    </div>
+                    <Button loading={paying} onClick={pay} disabled={checking}>
+                      <BsCreditCard2Back aria-hidden />
+                      Pay Now
+                    </Button>
+                  </div>
+                  {payments.data?.mode === 'test' && <TestModeNote />}
+                </div>
+              )}
 
               <OrderDetails order={order} />
 

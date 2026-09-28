@@ -8,6 +8,7 @@ import { Order, ORDER_STATUSES, PAYMENT_STATUSES } from '../models/Order.js'
 import { Product } from '../models/Product.js'
 import { slugify } from '../models/shared.js'
 import { User } from '../models/User.js'
+import { closeCheckout } from '../payments.js'
 
 export const admin = Router()
 
@@ -174,6 +175,7 @@ admin.put('/admin/orders/:id', async (req, res) => {
   if (wasCancelled && body.status !== 'cancelled') {
     throw new HttpError(409, 'A cancelled order cannot be reopened, its stock was already returned')
   }
+  if (!wasCancelled && body.status === 'cancelled' && order.payment.status !== 'paid') await closeCheckout(order)
   order.status = body.status
   if (body.paymentStatus) {
     order.payment.status = body.paymentStatus

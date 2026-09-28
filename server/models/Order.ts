@@ -20,7 +20,7 @@ export interface IOrderItem {
 }
 
 export interface IOrderPayment {
-  // 'none' until the Stripe phase; then 'stripe' with the ids filled in.
+  // 'none' until a Stripe Checkout is started for the order, then 'stripe'.
   provider: 'none' | 'stripe'
   status: PaymentStatus
   stripeSessionId: string
@@ -67,7 +67,17 @@ const paymentSchema = new Schema<IOrderPayment>(
     stripePaymentIntentId: { type: String, default: '' },
     paidAt: { type: Date, default: null },
   },
-  { _id: false },
+  {
+    _id: false,
+    // The Stripe ids are for the server only, responses never include them.
+    toJSON: {
+      transform: (_doc, ret: Record<string, unknown>) => {
+        delete ret.stripeSessionId
+        delete ret.stripePaymentIntentId
+        return ret
+      },
+    },
+  },
 )
 
 const orderSchema = new Schema<IOrder>(

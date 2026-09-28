@@ -3,6 +3,7 @@ import { BsArrowCounterclockwise, BsShieldLock, BsTruck } from 'react-icons/bs'
 import { Link } from 'react-router-dom'
 import { PromiseStrip } from '../components/layout/StorePromises.tsx'
 import { ProductGrid } from '../components/product/ProductGrid.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { ProductListItem } from '../components/shop/ProductListItem.tsx'
 import { Button, ButtonLink } from '../components/ui/Button.tsx'
 import { SectionHeading } from '../components/ui/SectionHeading.tsx'
@@ -225,7 +226,7 @@ function FeaturedPicks() {
 export default function Home2() {
   return (
     <>
-      <title>{`${site.name} | New collection`}</title>
+      <Seo title="New collection" noindex />
       <Hero />
       <PromiseStrip />
       <WeekPromos />

@@ -27,7 +27,7 @@ export function ProductListItem({ product }: { product: Product }) {
           <img
             src={img(product.images[0] ?? '', 420, 680)}
             srcSet={imgSet(product.images[0] ?? '', 420, 680)}
-            alt=""
+            alt={product.name}
             loading="lazy"
             decoding="async"
             className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"

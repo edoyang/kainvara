@@ -1,7 +1,14 @@
 import { useCallback, useState } from 'react'
 import { toItems } from '../context/cart.ts'
 import { api } from '../lib/api.ts'
-import type { CartLine, Quote, ShippingMethod, ShippingMethodId } from '../types.ts'
+import type {
+  CartLine,
+  CheckoutStart,
+  PaymentConfig,
+  Quote,
+  ShippingMethod,
+  ShippingMethodId,
+} from '../types.ts'
 import { useQuery } from './useQuery.ts'
 
 const PREFS_KEY = 'kainvara.checkout.v1'
@@ -56,4 +63,20 @@ export function useQuote(lines: CartLine[], shippingMethod: ShippingMethodId, co
 
 export function useShippingMethods() {
   return useQuery('shipping-methods', (signal) => api<ShippingMethod[]>('/shipping-methods', { signal }))
+}
+
+export function usePaymentConfig() {
+  return useQuery('payments-config', (signal) => api<PaymentConfig>('/payments/config', { signal }))
+}
+
+// Leaves the site for the Stripe payment page of an order. Returns false when
+// Stripe already holds the payment, so there is nothing left to pay.
+export async function goToPayment(orderNumber: string): Promise<boolean> {
+  const checkout = await api<CheckoutStart>('/payments/checkout-session', {
+    method: 'POST',
+    body: { orderNumber },
+  })
+  if (checkout.paid) return false
+  window.location.assign(checkout.url)
+  return true
 }

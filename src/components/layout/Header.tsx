@@ -16,8 +16,8 @@ import { useToast } from '../../context/toast.ts'
 import { useWishlist } from '../../context/wishlist.ts'
 import { useCategories } from '../../hooks/useCatalog.ts'
 import { cx } from '../../lib/format.ts'
-import { site } from '../../lib/site.ts'
 import { ButtonLink } from '../ui/Button.tsx'
+import { Brand } from './Brand.tsx'
 import { TopBar } from './TopBar.tsx'
 
 export type HeaderVariant = 'shop' | 'inner'
@@ -208,9 +208,7 @@ export function Header({ variant, topBar }: HeaderProps) {
           )}
         >
           <div className="flex items-center gap-10 xl:gap-[118px]">
-            <Link to="/" className="py-[13px] text-h3 text-ink" aria-label={`${site.name} home`}>
-              {site.name}
-            </Link>
+            <Brand />
 
             <nav aria-label="Main" className="hidden lg:block">
               {variant === 'shop' ? (

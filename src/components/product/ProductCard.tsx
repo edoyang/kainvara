@@ -67,7 +67,7 @@ export function ProductCard({ product, variant = 'standard' }: ProductCardProps)
           <img
             src={img(product.images[0] ?? '', 360, Math.round((cover.height * 360) / 239))}
             srcSet={imgSet(product.images[0] ?? '', 360, Math.round((cover.height * 360) / 239))}
-            alt=""
+            alt={product.name}
             loading="lazy"
             decoding="async"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-105"

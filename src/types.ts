@@ -124,6 +124,16 @@ export interface Quote {
   shippingMethod: ShippingMethodId
 }
 
+export interface PaymentConfig {
+  provider: 'none' | 'stripe'
+  enabled: boolean
+  // Test mode takes no real money, the payment page accepts Stripe's test cards.
+  mode: 'test' | 'live' | null
+}
+
+// The payment page to send the shopper to, or paid when Stripe already has the money.
+export type CheckoutStart = { paid: false; url: string } | { paid: true; url: null }
+
 export type OrderStatus = 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
 export type PaymentStatus = 'unpaid' | 'paid' | 'refunded' | 'failed'
 

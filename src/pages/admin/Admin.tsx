@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { PageHeader } from '../../components/ui/PageHeader.tsx'
+import { Seo } from '../../components/Seo.tsx'
 import { cx } from '../../lib/format.ts'
-import { pageTitle } from '../../lib/site.ts'
 
 const TABS = [
   { to: '/admin', label: 'Overview', end: true },
@@ -14,7 +14,7 @@ const TABS = [
 export default function Admin() {
   return (
     <>
-      <title>{pageTitle('Store admin')}</title>
+      <Seo title="Store admin" noindex />
       <PageHeader title="Store Admin" crumbs={[{ label: 'Admin' }]} />
 
       <section className="bg-white">

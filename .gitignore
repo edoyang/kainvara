@@ -12,10 +12,9 @@ dist
 dist-ssr
 *.local
 
-# Secrets. Only .env.example is committed.
+# Secrets, never committed. The variables are listed in the README.
 .env
 .env.*
-!.env.example
 
 # Vercel
 .vercel

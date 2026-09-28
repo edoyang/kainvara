@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom'
 import { InnerTitle } from '../components/inner/InnerTitle.tsx'
 import { TrialCta } from '../components/inner/Sections.tsx'
 import { PromiseRow } from '../components/layout/StorePromises.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { ButtonLink } from '../components/ui/Button.tsx'
 import { SectionHeading } from '../components/ui/SectionHeading.tsx'
 import { cx } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
+import { breadcrumbData } from '../lib/structuredData.ts'
 
 const YEARLY_DISCOUNT = 0.25
 
@@ -44,7 +45,7 @@ const FAQS = [
   {
     question: 'Which payment methods do you accept?',
     answer:
-      'Card payments are being added to the store. Until then orders are reserved without charge and no card details are taken.',
+      'Cards, through a secure payment page run by Stripe. Card details go to Stripe only and are never stored by this store. The store is a demonstration and runs in test mode, so no real money is taken.',
   },
   {
     question: 'Can I change plan later?',
@@ -63,7 +64,11 @@ export default function Pricing() {
 
   return (
     <>
-      <title>{pageTitle('Membership pricing')}</title>
+      <Seo
+        title="Membership pricing"
+        description="Compare Kainvara membership plans. Shopping is free for everyone, membership adds free delivery, early access and members only prices."
+        jsonLd={breadcrumbData([{ name: 'Pricing', path: '/pricing' }])}
+      />
       <InnerTitle eyebrow="Pricing" title="Simple Pricing" crumb="Pricing" />
 
       {/* The kit's "desktop-pricing-3" */}

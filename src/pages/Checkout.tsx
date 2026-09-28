@@ -3,19 +3,27 @@ import { BsCreditCard2Back, BsShieldLock } from 'react-icons/bs'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { AddressFields } from '../components/account/AddressFields.tsx'
 import { OrderSummary } from '../components/cart/OrderSummary.tsx'
+import { TestModeNote } from '../components/cart/PaymentNote.tsx'
 import { Button, ButtonLink } from '../components/ui/Button.tsx'
 import { Textarea } from '../components/ui/Field.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
+import { Spinner } from '../components/ui/States.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { useAuth } from '../context/auth.ts'
 import { lineKey, toItems, useCart } from '../context/cart.ts'
 import { useToast } from '../context/toast.ts'
-import { useCheckoutPrefs, useQuote, useShippingMethods } from '../hooks/useCheckout.ts'
+import {
+  goToPayment,
+  useCheckoutPrefs,
+  usePaymentConfig,
+  useQuote,
+  useShippingMethods,
+} from '../hooks/useCheckout.ts'
 import { clearQueryCache } from '../hooks/useQuery.ts'
 import { emptyAddress } from '../lib/address.ts'
 import { api, ApiError, errorMessage } from '../lib/api.ts'
 import { withoutError } from '../lib/forms.ts'
 import { cx, img, money } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
 import type { Address, Order, User } from '../types.ts'
 
 function Step({ number, title, children }: { number: number; title: string; children: ReactNode }) {
@@ -49,11 +57,30 @@ export default function Checkout() {
   const [saveAddress, setSaveAddress] = useState(true)
   const [busy, setBusy] = useState(false)
   const [placed, setPlaced] = useState(false)
+  const [leaving, setLeaving] = useState(false)
   const [fields, setFields] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState('')
+  const payments = usePaymentConfig()
+  const cardPayment = payments.data?.enabled === true
 
   // After the order is placed the cart is empty, the redirect below must not win.
   if (lines.length === 0 && !placed) return <Navigate to="/cart" replace />
+
+  if (leaving) {
+    return (
+      <>
+        <Seo title="Checkout" noindex />
+        <PageHeader title="Checkout" crumbs={[{ label: 'Cart', to: '/cart' }, { label: 'Checkout' }]} />
+        <section className="bg-white">
+          <div className="container-x flex min-h-[50vh] flex-col items-center justify-center gap-5 py-12 text-center">
+            <Spinner />
+            <h2 className="text-h3">Taking you to the secure payment page</h2>
+            <p className="text-p">Your order is reserved. Please do not close this page.</p>
+          </div>
+        </section>
+      </>
+    )
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -77,6 +104,19 @@ export default function Checkout() {
       setPrefs({ couponCode: '' })
       clearQueryCache()
       if (saveAddress && user) setUser({ ...user, address } satisfies User)
+
+      if (cardPayment) {
+        setLeaving(true)
+        try {
+          // The browser leaves for the payment page and comes back to the order.
+          if (await goToPayment(order.number)) return
+        } catch (err) {
+          notify(`${errorMessage(err)} Your order is reserved, you can pay from this page.`, 'error')
+        }
+        setLeaving(false)
+        navigate(`/order/${order.number}`, { replace: true })
+        return
+      }
       notify(`Order ${order.number} is confirmed`)
       navigate(`/order/${order.number}`, { replace: true, state: { placed: true } })
     } catch (err) {
@@ -93,7 +133,7 @@ export default function Checkout() {
 
   return (
     <>
-      <title>{pageTitle('Checkout')}</title>
+      <Seo title="Checkout" noindex />
       <PageHeader title="Checkout" crumbs={[{ label: 'Cart', to: '/cart' }, { label: 'Checkout' }]} />
 
       <section className="bg-white">
@@ -171,14 +211,25 @@ export default function Checkout() {
             <Step number={3} title="Payment">
               <div className="flex items-start gap-4 rounded-[5px] bg-gray-1 p-4">
                 <BsCreditCard2Back size={28} className="mt-0.5 shrink-0 text-primary" aria-hidden />
-                <div className="flex flex-col gap-1">
-                  <p className="text-h6 text-ink">Card payment is not switched on yet</p>
-                  <p className="text-p">
-                    Your order is reserved now and no payment is taken. Once card payment is switched on you
-                    will be able to pay from your order page.
-                  </p>
-                </div>
+                {cardPayment ? (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-h6 text-ink">Pay by card on the next page</p>
+                    <p className="text-p">
+                      Placing the order reserves your items and takes you to a secure payment page run by
+                      Stripe. Your card details go to Stripe only and never pass through this store.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-h6 text-ink">Card payment is not switched on</p>
+                    <p className="text-p">
+                      Your order is reserved now and no payment is taken. Once card payment is switched on
+                      you will be able to pay from your order page.
+                    </p>
+                  </div>
+                )}
               </div>
+              {cardPayment && payments.data?.mode === 'test' && <TestModeNote className="mt-4" />}
             </Step>
           </div>
 
@@ -214,8 +265,8 @@ export default function Checkout() {
                   {formError}
                 </p>
               )}
-              <Button type="submit" block loading={busy} disabled={!quote.data}>
-                Place Order
+              <Button type="submit" block loading={busy} disabled={!quote.data || payments.loading}>
+                {cardPayment ? 'Place Order and Pay' : 'Place Order'}
               </Button>
               <ButtonLink to="/cart" variant="outline-primary" block>
                 Back to Cart

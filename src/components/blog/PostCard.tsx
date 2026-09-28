@@ -15,7 +15,7 @@ export function PostCard({ post }: { post: Post }) {
           <img
             src={img(post.image, 400, 345)}
             srcSet={imgSet(post.image, 400, 345)}
-            alt=""
+            alt={post.title}
             loading="lazy"
             decoding="async"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-105"

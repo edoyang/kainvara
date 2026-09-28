@@ -43,7 +43,7 @@ function Slide({ product }: { product: Product }) {
           <img
             src={img(product.images[0] ?? '', 500, 680)}
             srcSet={imgSet(product.images[0] ?? '', 500, 680)}
-            alt=""
+            alt={product.name}
             loading="lazy"
             decoding="async"
             className="size-full object-cover"

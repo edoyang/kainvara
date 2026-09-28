@@ -1,7 +1,9 @@
 import { InnerTitle } from '../components/inner/InnerTitle.tsx'
 import { TeamGrid, TrialCta } from '../components/inner/Sections.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { img, imgSet } from '../lib/format.ts'
-import { media, pageTitle, site } from '../lib/site.ts'
+import { media, site } from '../lib/site.ts'
+import { breadcrumbData } from '../lib/structuredData.ts'
 
 // The kit's "desktop-hero-picture-1": one large photo and four small ones.
 function Collage() {
@@ -36,7 +38,11 @@ function Collage() {
 export default function Team() {
   return (
     <>
-      <title>{pageTitle('Our team')}</title>
+      <Seo
+        title="Our team"
+        description="Meet the people behind Kainvara, from design and buying to customer care."
+        jsonLd={breadcrumbData([{ name: 'Our team', path: '/team' }])}
+      />
       <InnerTitle eyebrow="What we do" title="Innovation tailored for you" crumb="Team" />
       <Collage />
       <TeamGrid count={9} />

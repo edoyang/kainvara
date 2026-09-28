@@ -7,6 +7,7 @@ import { Button, ButtonLink } from '../components/ui/Button.tsx'
 import { Input } from '../components/ui/Field.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { EmptyState, ErrorState, Spinner } from '../components/ui/States.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { useAuth } from '../context/auth.ts'
 import { useToast } from '../context/toast.ts'
 import { useQuery } from '../hooks/useQuery.ts'
@@ -14,7 +15,6 @@ import { emptyAddress } from '../lib/address.ts'
 import { api, ApiError, errorMessage } from '../lib/api.ts'
 import { withoutError } from '../lib/forms.ts'
 import { cx, formatDate, money, plural } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
 import type { Address, Order, User } from '../types.ts'
 
 function Profile({ user }: { user: User }) {
@@ -226,7 +226,7 @@ export default function Account({ tab }: { tab: 'profile' | 'orders' | 'password
 
   return (
     <>
-      <title>{pageTitle('My account')}</title>
+      <Seo title="My account" noindex />
       <PageHeader title="My Account" crumbs={[{ label: 'My account' }]} />
 
       <section className="bg-white">

@@ -9,6 +9,7 @@ import { catalog } from './routes/catalog.js'
 import { content } from './routes/content.js'
 import { orders } from './routes/orders.js'
 import { payments } from './routes/payments.js'
+import { seo } from './routes/seo.js'
 import { system } from './routes/system.js'
 import { ensureSeeded } from './seed/seed.js'
 
@@ -23,8 +24,8 @@ app.use((_req, res, next) => {
   next()
 })
 
-// The Stripe webhook (final phase) must read the raw body to verify its
-// signature, so it is the one route that skips the JSON parser.
+// The Stripe webhook must read the raw body to verify its signature, so it
+// is the one route that skips the JSON parser.
 const WEBHOOK_PATH = '/api/payments/webhook'
 
 app.use((req, res, next) => {
@@ -56,6 +57,8 @@ app.use(async (_req, _res, next) => {
 
 app.use('/api', system, catalog, auth, account, orders, content, payments, admin)
 app.use('/api', notFound)
+// Outside /api: the sitemap, and link previews for chat apps (see vercel.json).
+app.use(seo)
 app.use(errorHandler)
 
 export default app

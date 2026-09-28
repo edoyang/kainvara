@@ -1,12 +1,18 @@
 import { InnerHero } from '../components/inner/InnerHero.tsx'
 import { Stats, TeamGrid, VideoSection, WhatYouGet, WorkWithUs } from '../components/inner/Sections.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { ButtonLink } from '../components/ui/Button.tsx'
-import { media, pageTitle, site } from '../lib/site.ts'
+import { media, site } from '../lib/site.ts'
+import { breadcrumbData } from '../lib/structuredData.ts'
 
 export default function About() {
   return (
     <>
-      <title>{pageTitle('About us')}</title>
+      <Seo
+        title="About us"
+        description="Kainvara is a fashion store for clothing, shoes and accessories chosen to be worn often and kept for years. Read our story and meet the team."
+        jsonLd={breadcrumbData([{ name: 'About us', path: '/about' }])}
+      />
       <InnerHero
         eyebrow="About company"
         title="ABOUT US"

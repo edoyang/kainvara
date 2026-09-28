@@ -1,0 +1,14 @@
+# Kainvara
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /account
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order/
+Disallow: /wishlist
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://kainvara.vercel.app/sitemap.xml

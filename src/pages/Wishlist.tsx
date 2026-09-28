@@ -3,12 +3,12 @@ import { ProductGrid } from '../components/product/ProductGrid.tsx'
 import { ButtonLink } from '../components/ui/Button.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { EmptyState } from '../components/ui/States.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { useAuth } from '../context/auth.ts'
 import { useWishlist } from '../context/wishlist.ts'
 import { useQuery } from '../hooks/useQuery.ts'
 import { api } from '../lib/api.ts'
 import { plural } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
 import type { Product } from '../types.ts'
 
 export default function Wishlist() {
@@ -25,7 +25,7 @@ export default function Wishlist() {
 
   return (
     <>
-      <title>{pageTitle('Wishlist')}</title>
+      <Seo title="Wishlist" noindex />
       <PageHeader title="Wishlist" crumbs={[{ label: 'Wishlist' }]} />
 
       <section className="bg-white">

@@ -1,11 +1,12 @@
 import { useSearchParams } from 'react-router-dom'
 import { PostCard, PostCardSkeleton } from '../components/blog/PostCard.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { Pagination } from '../components/ui/Pagination.tsx'
 import { SectionHeading } from '../components/ui/SectionHeading.tsx'
 import { ErrorState } from '../components/ui/States.tsx'
 import { usePosts } from '../hooks/useCatalog.ts'
-import { pageTitle } from '../lib/site.ts'
+import { breadcrumbData } from '../lib/structuredData.ts'
 
 export default function Blog() {
   const [params, setParams] = useSearchParams()
@@ -14,7 +15,12 @@ export default function Blog() {
 
   return (
     <>
-      <title>{pageTitle('Blog')}</title>
+      <Seo
+        title="Blog"
+        description="Style guides, clothing care tips and stories from inside the Kainvara studio."
+        path={page > 1 ? `/blog?page=${page}` : '/blog'}
+        jsonLd={breadcrumbData([{ name: 'Blog', path: '/blog' }])}
+      />
       <PageHeader title="Blog" crumbs={[{ label: 'Blog' }]} />
 
       <section className="bg-white">

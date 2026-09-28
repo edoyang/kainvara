@@ -7,6 +7,7 @@ import { HttpError, parse, rateLimit } from '../http.js'
 import { Order } from '../models/Order.js'
 import { Product } from '../models/Product.js'
 import { User } from '../models/User.js'
+import { closeCheckout } from '../payments.js'
 import { buildQuote, cartItemsSchema, findCoupon, SHIPPING_METHODS, type CartLine } from '../pricing.js'
 import { addressSchema } from './auth.js'
 
@@ -155,6 +156,7 @@ orders.post('/orders/:number/cancel', requireAuth, async (req, res) => {
   if (order.status !== 'pending') {
     throw new HttpError(409, 'This order can no longer be cancelled. Please contact support.')
   }
+  await closeCheckout(order)
   // The status filter makes the cancel idempotent, so stock is returned once.
   const updated = await Order.findOneAndUpdate(
     { _id: order._id, status: 'pending' },

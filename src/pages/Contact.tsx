@@ -3,8 +3,10 @@ import { BsEnvelopeFill, BsLinkedin, BsTelephone } from 'react-icons/bs'
 import { ContactForm } from '../components/inner/ContactForm.tsx'
 import { InnerHero } from '../components/inner/InnerHero.tsx'
 import { SocialLogos } from '../components/inner/Sections.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { cx } from '../lib/format.ts'
-import { media, pageTitle, site } from '../lib/site.ts'
+import { media, site } from '../lib/site.ts'
+import { breadcrumbData } from '../lib/structuredData.ts'
 
 interface CardProps {
   icon: ReactNode
@@ -51,7 +53,11 @@ function Card({ icon, lines, title, action, href, dark }: CardProps) {
 export default function Contact() {
   return (
     <>
-      <title>{pageTitle('Contact us')}</title>
+      <Seo
+        title="Contact us"
+        description="Get in touch with Kainvara by phone, email or the contact form. Questions about an order, a size or a return are all welcome."
+        jsonLd={breadcrumbData([{ name: 'Contact us', path: '/contact' }])}
+      />
       <InnerHero
         eyebrow="Contact us"
         title={

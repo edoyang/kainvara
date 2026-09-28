@@ -5,6 +5,7 @@ import { PromiseStrip } from '../components/layout/StorePromises.tsx'
 import { Gallery } from '../components/product/Gallery.tsx'
 import { ProductGrid } from '../components/product/ProductGrid.tsx'
 import { ProductTabs } from '../components/product/ProductTabs.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { Breadcrumb } from '../components/ui/Breadcrumb.tsx'
 import { Button, ButtonLink } from '../components/ui/Button.tsx'
 import { Stars } from '../components/ui/Stars.tsx'
@@ -14,8 +15,8 @@ import { useToast } from '../context/toast.ts'
 import { useWishlist } from '../context/wishlist.ts'
 import { useQuery } from '../hooks/useQuery.ts'
 import { api } from '../lib/api.ts'
-import { cx, discountPercent, money, plural } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
+import { cx, discountPercent, img, money, plural } from '../lib/format.ts'
+import { breadcrumbData, productData } from '../lib/structuredData.ts'
 import type { Product } from '../types.ts'
 
 interface ProductResponse {
@@ -241,7 +242,26 @@ export default function ProductPage() {
 
   return (
     <>
-      <title>{pageTitle(product ? product.name : 'Product')}</title>
+      <Seo
+        title={product ? product.name : 'Product'}
+        description={
+          product &&
+          `${product.summary} ${money(product.price)} at Kainvara, with free delivery over $50 and 30 day returns.`
+        }
+        image={product?.images[0] ? img(product.images[0], 1200, 630) : undefined}
+        type={product ? 'product' : 'website'}
+        noindex={Boolean(error) && !product}
+        jsonLd={
+          product && [
+            productData(product),
+            breadcrumbData([
+              { name: 'Shop', path: '/shop' },
+              { name: product.category.name, path: `/shop/${product.category.slug}` },
+              { name: product.name, path: `/product/${product.slug}` },
+            ]),
+          ]
+        }
+      />
 
       <section className="bg-gray-1">
         <div className="container-x py-6">

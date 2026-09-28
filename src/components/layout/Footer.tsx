@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { cx } from '../../lib/format.ts'
 import { site } from '../../lib/site.ts'
 import { ButtonLink } from '../ui/Button.tsx'
+import { Brand } from './Brand.tsx'
 import { SocialLinks } from './SocialLinks.tsx'
 import { SubscribeForm } from './SubscribeForm.tsx'
 
@@ -67,9 +68,7 @@ export function Footer({ tone = 'light' }: { tone?: 'light' | 'dark' }) {
             </>
           ) : (
             <>
-              <Link to="/" className="py-[13px] text-h3 text-ink">
-                {site.name}
-              </Link>
+              <Brand />
               {social}
             </>
           )}

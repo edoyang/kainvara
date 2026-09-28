@@ -3,11 +3,12 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/ui/Button.tsx'
 import { Input } from '../components/ui/Field.tsx'
 import { PageLoader } from '../components/ui/States.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { useAuth } from '../context/auth.ts'
 import { useToast } from '../context/toast.ts'
 import { ApiError, errorMessage } from '../lib/api.ts'
 import { img, imgSet } from '../lib/format.ts'
-import { media, pageTitle, site } from '../lib/site.ts'
+import { media, site } from '../lib/site.ts'
 
 // Only same-site paths are accepted, so a crafted link cannot send a visitor
 // to another website after they sign in.
@@ -58,7 +59,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
 
   return (
     <section className="bg-gray-1">
-      <title>{pageTitle(isLogin ? 'Sign in' : 'Create account')}</title>
+      <Seo title={isLogin ? 'Sign in' : 'Create account'} noindex />
       <div className="container-x py-12 lg:py-20">
         <div className="grid overflow-hidden rounded-[5px] bg-white shadow-accent lg:grid-cols-2">
           <div className="px-6 py-10 sm:px-12 lg:py-[60px]">

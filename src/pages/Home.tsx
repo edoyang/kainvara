@@ -3,11 +3,12 @@ import { FeaturedPosts } from '../components/home/FeaturedPosts.tsx'
 import { HeroCarousel } from '../components/home/HeroCarousel.tsx'
 import { ProductSpotlight } from '../components/home/ProductSpotlight.tsx'
 import { ProductGrid } from '../components/product/ProductGrid.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { ButtonLink } from '../components/ui/Button.tsx'
 import { SectionHeading } from '../components/ui/SectionHeading.tsx'
 import { useProducts } from '../hooks/useCatalog.ts'
 import { img, imgSet, seasonLabel } from '../lib/format.ts'
-import { media, pageTitle } from '../lib/site.ts'
+import { media } from '../lib/site.ts'
 
 function Bestsellers() {
   const { data, loading, error, reload } = useProducts({ bestseller: true, sort: 'popularity', limit: 8 })
@@ -71,7 +72,7 @@ function Universe() {
 export default function Home() {
   return (
     <>
-      <title>{pageTitle()}</title>
+      <Seo path="/" />
       <HeroCarousel />
       <EditorsPick />
       <Bestsellers />

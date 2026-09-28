@@ -5,12 +5,12 @@ import { OrderSummary } from '../components/cart/OrderSummary.tsx'
 import { ButtonLink } from '../components/ui/Button.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
 import { EmptyState } from '../components/ui/States.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { useAuth } from '../context/auth.ts'
 import { lineKey, useCart } from '../context/cart.ts'
 import { useToast } from '../context/toast.ts'
 import { useCheckoutPrefs, useQuote } from '../hooks/useCheckout.ts'
 import { img, money, plural } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
 import type { CartLine } from '../types.ts'
 
 function sameLines(a: CartLine[], b: CartLine[]): boolean {
@@ -49,7 +49,7 @@ export default function Cart() {
 
   return (
     <>
-      <title>{pageTitle('Your cart')}</title>
+      <Seo title="Your cart" noindex />
       <PageHeader title="Shopping Cart" crumbs={[{ label: 'Cart' }]} />
 
       <section className="bg-white">

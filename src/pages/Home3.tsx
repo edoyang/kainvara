@@ -5,12 +5,13 @@ import { FeaturedPosts } from '../components/home/FeaturedPosts.tsx'
 import { PromiseStrip } from '../components/layout/StorePromises.tsx'
 import { Prices } from '../components/product/ProductCard.tsx'
 import { ProductGrid } from '../components/product/ProductGrid.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { ButtonLink } from '../components/ui/Button.tsx'
 import { Carousel } from '../components/ui/Carousel.tsx'
 import { Skeleton } from '../components/ui/States.tsx'
 import { useCategories, useProducts } from '../hooks/useCatalog.ts'
 import { cx, img, imgSet, plural } from '../lib/format.ts'
-import { photo, site } from '../lib/site.ts'
+import { photo } from '../lib/site.ts'
 import type { Category } from '../types.ts'
 
 const SLIDES = [
@@ -31,27 +32,31 @@ function Hero() {
   return (
     <Carousel
       label="Store highlights"
-      slides={SLIDES.map((slide, index) => (
-        <div key={slide.title} className="relative flex h-[640px] items-center justify-center">
-          <img
-            src={img(slide.image, 1600, 720)}
-            srcSet={`${img(slide.image, 800, 1000)} 800w, ${img(slide.image, 1600, 720)} 1600w`}
-            sizes="100vw"
-            alt=""
-            fetchPriority={index === 0 ? 'high' : 'low'}
-            loading={index === 0 ? 'eager' : 'lazy'}
-            className="absolute inset-0 size-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="relative flex max-w-[699px] flex-col items-center gap-6 px-10 py-10 text-center">
-            <h2 className="text-h2 text-white lg:text-h1">{slide.title}</h2>
-            <p className="max-w-[536px] text-h4 text-white">{slide.text}</p>
-            <ButtonLink to="/shop" size="lg">
-              Start Now
-            </ButtonLink>
+      slides={SLIDES.map((slide, index) => {
+        // One h1 per page: the first slide carries it, the rest are h2.
+        const Heading = index === 0 ? 'h1' : 'h2'
+        return (
+          <div key={slide.title} className="relative flex h-[640px] items-center justify-center">
+            <img
+              src={img(slide.image, 1600, 720)}
+              srcSet={`${img(slide.image, 800, 1000)} 800w, ${img(slide.image, 1600, 720)} 1600w`}
+              sizes="100vw"
+              alt=""
+              fetchPriority={index === 0 ? 'high' : 'low'}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              className="absolute inset-0 size-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative flex max-w-[699px] flex-col items-center gap-6 px-10 py-10 text-center">
+              <Heading className="text-h2 text-white lg:text-h1">{slide.title}</Heading>
+              <p className="max-w-[536px] text-h4 text-white">{slide.text}</p>
+              <ButtonLink to="/shop" size="lg">
+                Start Now
+              </ButtonLink>
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     />
   )
 }
@@ -304,7 +309,7 @@ export default function Home3() {
 
   return (
     <>
-      <title>{`${site.name} | Style delivered`}</title>
+      <Seo title="Style delivered" noindex />
       <Hero />
       <Banners categories={categories.data} />
       <Showcase categories={categories.data} lead="women" tabs={['men', 'women', 'accessories']} />

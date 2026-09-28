@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { Seo } from '../components/Seo.tsx'
 import { PageHeader } from '../components/ui/PageHeader.tsx'
-import { pageTitle, site } from '../lib/site.ts'
+import { site } from '../lib/site.ts'
+import { breadcrumbData } from '../lib/structuredData.ts'
 
 const SECTIONS = [
   {
@@ -17,7 +19,7 @@ const SECTIONS = [
     title: 'Returns',
     body: [
       'You can return unworn items in their original packaging within 30 days of delivery for a full refund.',
-      'An order that has not been paid for yet can be cancelled from its order page. The items go straight back on sale.',
+      'An order that has not been paid for yet can be cancelled from its order page. The items go straight back on sale and any open payment page is closed.',
       'Refunds are made to the original payment method within 5 business days of the return reaching us.',
     ],
   },
@@ -36,7 +38,7 @@ const SECTIONS = [
     body: [
       'Prices are shown in US dollars and can change without notice. The price that applies is the one shown when you place your order.',
       'Stock is reserved when an order is placed. If an item cannot be supplied we will tell you and cancel that part of the order.',
-      'This store is a portfolio project by Edoardo (Edo Yang). Orders placed here are demonstrations, no payment is taken and no goods are shipped.',
+      'This store is a portfolio project by Edoardo (Edo Yang). Orders placed here are demonstrations: card payments run in Stripe test mode, so no real money is taken and no goods are shipped.',
     ],
   },
 ]
@@ -44,7 +46,11 @@ const SECTIONS = [
 export default function Policies() {
   return (
     <>
-      <title>{pageTitle('Store policies')}</title>
+      <Seo
+        title="Store policies"
+        description="Shipping times and costs, 30 day returns, privacy and terms of service for the Kainvara store."
+        jsonLd={breadcrumbData([{ name: 'Policies', path: '/policies' }])}
+      />
       <PageHeader title="Store Policies" crumbs={[{ label: 'Policies' }]} />
 
       <section className="bg-white">

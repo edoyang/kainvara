@@ -10,7 +10,7 @@ function apiDevServer(): Plugin {
     apply: 'serve',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        if (!req.url?.startsWith('/api')) return next()
+        if (!req.url?.startsWith('/api') && !req.url?.startsWith('/sitemap.xml')) return next()
         try {
           const mod = await server.ssrLoadModule('/server/app.ts')
           mod.default(req, res, next)

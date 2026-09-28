@@ -25,7 +25,7 @@ export function CategoryCards({ active }: { active?: string }) {
                   <img
                     src={img(category.image, 420, 460)}
                     srcSet={imgSet(category.image, 420, 460)}
-                    alt=""
+                    alt={`${category.name} collection`}
                     loading="lazy"
                     decoding="async"
                     className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"

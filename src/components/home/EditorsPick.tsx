@@ -20,7 +20,7 @@ function Tile({ category, width, height, className, labelClassName }: TileProps)
       <img
         src={img(category.image, width, height)}
         srcSet={imgSet(category.image, width, height)}
-        alt=""
+        alt={`${category.name} collection`}
         loading="lazy"
         decoding="async"
         className="size-full object-cover transition-transform duration-500 group-hover:scale-105"

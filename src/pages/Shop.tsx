@@ -3,6 +3,7 @@ import { BsGridFill, BsListCheck, BsX } from 'react-icons/bs'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { PromiseStrip } from '../components/layout/StorePromises.tsx'
 import { ProductGrid } from '../components/product/ProductGrid.tsx'
+import { Seo } from '../components/Seo.tsx'
 import { CategoryCards } from '../components/shop/CategoryCards.tsx'
 import { FilterPanel, type FilterValues } from '../components/shop/FilterPanel.tsx'
 import { ProductListItem } from '../components/shop/ProductListItem.tsx'
@@ -13,7 +14,7 @@ import { Pagination } from '../components/ui/Pagination.tsx'
 import { EmptyState } from '../components/ui/States.tsx'
 import { useCategories, useProducts } from '../hooks/useCatalog.ts'
 import { cx } from '../lib/format.ts'
-import { pageTitle } from '../lib/site.ts'
+import { breadcrumbData } from '../lib/structuredData.ts'
 
 const PAGE_SIZE = 12
 
@@ -112,7 +113,21 @@ export default function Shop() {
 
   return (
     <>
-      <title>{pageTitle(title)}</title>
+      <Seo
+        title={title}
+        description={
+          current
+            ? `${current.description} Shop ${current.name.toLowerCase()} at Kainvara with free delivery over $50 and 30 day returns.`
+            : 'Browse the full Kainvara range of clothing, shoes and accessories for men, women and kids.'
+        }
+        path={`${category ? `/shop/${category}` : '/shop'}${page > 1 ? `?page=${page}` : ''}`}
+        // Search results and filter combinations are endless, they stay out of search.
+        noindex={chips.length > 0}
+        jsonLd={breadcrumbData([
+          { name: 'Shop', path: '/shop' },
+          ...(current ? [{ name: current.name, path: `/shop/${current.slug}` }] : []),
+        ])}
+      />
 
       <section className="bg-gray-1">
         <div className="container-x flex flex-col items-center justify-between gap-4 py-6 sm:flex-row">

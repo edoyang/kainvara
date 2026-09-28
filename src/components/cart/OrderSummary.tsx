@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useState, type KeyboardEvent, type ReactNode } from 'react'
 import { BsTag, BsX } from 'react-icons/bs'
 import { cx, money } from '../../lib/format.ts'
 import type { Quote } from '../../types.ts'
@@ -25,10 +25,17 @@ function Row({ label, value, strong, tone }: { label: string; value: string; str
 export function OrderSummary({ quote, loading, couponCode, onCouponChange, children }: OrderSummaryProps) {
   const [code, setCode] = useState('')
 
-  function apply(event: FormEvent) {
-    event.preventDefault()
+  function apply() {
     if (code.trim()) onCouponChange(code.trim().toUpperCase())
     setCode('')
+  }
+
+  // Not a form of its own: on the checkout page this sits inside the order
+  // form, and a form inside a form would place the order when a code is applied.
+  function applyOnEnter(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter') return
+    event.preventDefault()
+    apply()
   }
 
   return (
@@ -52,7 +59,7 @@ export function OrderSummary({ quote, loading, couponCode, onCouponChange, child
           </button>
         </div>
       ) : (
-        <form onSubmit={apply} className="mt-5">
+        <div className="mt-5">
           <label htmlFor="coupon" className="mb-2.5 block text-h6 text-ink">
             Discount code
           </label>
@@ -61,13 +68,16 @@ export function OrderSummary({ quote, loading, couponCode, onCouponChange, child
               id="coupon"
               value={code}
               onChange={(event) => setCode(event.target.value)}
+              onKeyDown={applyOnEnter}
+              enterKeyHint="done"
               placeholder="Enter code"
               maxLength={40}
               autoComplete="off"
               className={cx(fieldClass, 'h-[50px] min-w-0 rounded-r-none border-r-0 bg-white uppercase placeholder:normal-case')}
             />
             <button
-              type="submit"
+              type="button"
+              onClick={apply}
               className="shrink-0 rounded-r-[5px] bg-dark px-5 text-h6 text-white transition-colors hover:bg-black"
             >
               Apply
@@ -78,7 +88,7 @@ export function OrderSummary({ quote, loading, couponCode, onCouponChange, child
               {quote.couponError}
             </p>
           )}
-        </form>
+        </div>
       )}
 
       {quote ? (

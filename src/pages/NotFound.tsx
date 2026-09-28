@@ -1,10 +1,10 @@
 import { ButtonLink } from '../components/ui/Button.tsx'
-import { pageTitle } from '../lib/site.ts'
+import { Seo } from '../components/Seo.tsx'
 
 export default function NotFound() {
   return (
     <section className="bg-gray-1">
-      <title>{pageTitle('Page not found')}</title>
+      <Seo title="Page not found" noindex />
       <div className="container-x flex min-h-[60vh] flex-col items-center justify-center gap-6 py-20 text-center">
         <p className="text-h5 text-primary">ERROR 404</p>
         <h1 className="text-h2 lg:text-h1">Page not found</h1>

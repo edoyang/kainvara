@@ -2,7 +2,14 @@
 export const site = {
   // "kain" is Indonesian for cloth.
   name: 'Kainvara',
-  tagline: 'Modern fashion store',
+  // Follows the name in the home page title, so it says what the store sells.
+  tagline: 'Clothing, Shoes and Accessories Online',
+  // The public address, used for canonical links and share previews.
+  url: 'https://kainvara.vercel.app',
+  description:
+    'Shop clothing, shoes and accessories for men, women and kids at Kainvara. Free delivery over $50, express shipping and 30 day returns.',
+  logo: '/logo.svg',
+  shareImage: '/og-image.png',
   phone: '+61 415 840 205',
   phoneHref: 'tel:+61415840205',
   email: 'edoyangz@gmail.com',

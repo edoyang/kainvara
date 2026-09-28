@@ -2,14 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#252b42" />
+
+    <!-- Defaults for the home page and for crawlers that do not run scripts.
+         src/components/Seo.tsx updates the same tags for every other page. -->
+    <title>Kainvara | Clothing, Shoes and Accessories Online</title>
     <meta
       name="description"
-      content="Kainvara is a modern fashion store: clothing, shoes and accessories for men, women and kids. A full stack portfolio project by Edoardo (Edo Yang)."
+      content="Shop clothing, shoes and accessories for men, women and kids at Kainvara. Free delivery over $50, express shipping and 30 day returns."
     />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="author" content="Edoardo (Edo Yang)" />
+    <meta name="application-name" content="Kainvara" />
+    <meta name="apple-mobile-web-app-title" content="Kainvara" />
+    <meta name="theme-color" content="#252b42" />
+    <link rel="canonical" href="https://kainvara.vercel.app/" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:site_name" content="Kainvara" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Kainvara | Clothing, Shoes and Accessories Online" />
+    <meta
+      property="og:description"
+      content="Shop clothing, shoes and accessories for men, women and kids at Kainvara. Free delivery over $50, express shipping and 30 day returns."
+    />
+    <meta property="og:url" content="https://kainvara.vercel.app/" />
+    <meta property="og:image" content="https://kainvara.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Kainvara, clothing, shoes and accessories for men, women and kids" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kainvara | Clothing, Shoes and Accessories Online" />
+    <meta
+      name="twitter:description"
+      content="Shop clothing, shoes and accessories for men, women and kids at Kainvara. Free delivery over $50, express shipping and 30 day returns."
+    />
+    <meta name="twitter:image" content="https://kainvara.vercel.app/og-image.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" />
@@ -17,10 +52,77 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <title>Kainvara | Modern fashion store</title>
+
+    <!-- The store itself, shown on every page. Page level data (products,
+         posts, breadcrumbs) is added by src/components/Seo.tsx. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "OnlineStore",
+            "@id": "https://kainvara.vercel.app/#store",
+            "name": "Kainvara",
+            "url": "https://kainvara.vercel.app/",
+            "logo": "https://kainvara.vercel.app/icon-512.png",
+            "image": "https://kainvara.vercel.app/og-image.png",
+            "description": "Clothing, shoes and accessories for men, women and kids, with free delivery over $50 and 30 day returns.",
+            "email": "edoyangz@gmail.com",
+            "telephone": "+61415840205",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Sydney",
+              "addressRegion": "NSW",
+              "addressCountry": "AU"
+            },
+            "founder": {
+              "@type": "Person",
+              "name": "Edoardo (Edo Yang)",
+              "url": "https://edoyang.github.io/"
+            },
+            "sameAs": ["https://www.linkedin.com/in/edoyang/", "https://github.com/edoyang"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://kainvara.vercel.app/#website",
+            "name": "Kainvara",
+            "alternateName": "Kainvara Store",
+            "url": "https://kainvara.vercel.app/",
+            "inLanguage": "en",
+            "publisher": { "@id": "https://kainvara.vercel.app/#store" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://kainvara.vercel.app/shop?q={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <h1>Kainvara</h1>
+      <p>
+        Clothing, shoes and accessories for men, women and kids. Free delivery over $50, express
+        shipping and 30 day returns. This store needs JavaScript to run, please turn it on to shop.
+      </p>
+      <ul>
+        <li><a href="/shop">Shop all products</a></li>
+        <li><a href="/shop/men">Men</a></li>
+        <li><a href="/shop/women">Women</a></li>
+        <li><a href="/shop/kids">Kids</a></li>
+        <li><a href="/shop/accessories">Accessories</a></li>
+        <li><a href="/shop/shoes">Shoes</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
